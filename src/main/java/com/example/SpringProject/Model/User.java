@@ -33,6 +33,11 @@ private LocalDateTime updatedAt;
         // Default constructor is required by JPA
     }
 
+    public User(String name, String mail) {
+        this.name = name;
+        this.email = mail;
+    }
+
     public Long getId() {
         return id;
     }
