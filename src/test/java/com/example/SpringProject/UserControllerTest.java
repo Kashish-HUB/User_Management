@@ -13,14 +13,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -88,5 +88,19 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[1].id",notNullValue()))
                 .andExpect(jsonPath("$[1].name", is("Bob")))
                 .andExpect(jsonPath("$[1].email", is("bob.bob@example.com")));
+    }
+    @Test
+    void testDeleteUserFound() throws Exception {
+        mockMvc.perform(delete("/api/users/{id}", user1.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testDeleteUserNotFound() throws Exception {
+        long nonExistentId = 9999L;
+        mockMvc.perform(delete("/api/users/{id}", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
