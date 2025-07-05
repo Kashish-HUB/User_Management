@@ -61,11 +61,17 @@
 
 ## 📦 Project Structure
 User_Management/
+
 ├── controller/ → REST API endpoints
+
 ├── model/ → User entity class
+
 ├── repository/ → JPA repository
+
 ├── test/ → Unit & integration tests
+
 └── resources/
+
 └── application.properties
 
 
