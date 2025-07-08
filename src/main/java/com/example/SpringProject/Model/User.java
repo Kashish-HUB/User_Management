@@ -12,6 +12,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -19,23 +21,35 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NonNull
     @NotBlank(message = "Name is mandatory")
     @Size(min=2, max=100, message = "Name must be between 2 and 100 characters")
-    private  String name;
+    private String name;
+
     @NonNull
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Email should be valid")
     private String email;
-@Column(name="created_at",updatable = false)
-@CreationTimestamp
-private LocalDateTime createdAt;
 
-@Column(name="updated_at")
-@UpdateTimestamp
-private LocalDateTime updatedAt;
 
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="user_roles",joinColumns = @JoinColumn(name="user_id"))
+    @Column(name="role")
+    private Set<String> roles = new HashSet<>();
+
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
