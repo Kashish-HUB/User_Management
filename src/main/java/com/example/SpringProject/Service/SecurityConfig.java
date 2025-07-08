@@ -70,12 +70,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/users/register").permitAll()
-                        .requestMatchers("api/users/page").permitAll()
-                        .requestMatchers("api/users").hasRole("ADMIN")
-                        .requestMatchers("api/users").hasAnyRole("USER","ADMIN")
-                        .anyRequest().authenticated()).httpBasic(org.springframework.security.config.Customizer.withDefaults())
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/api/users/page").permitAll()
+                        .requestMatchers("/api/users").hasRole("ADMIN")
+                        .requestMatchers("/api/users").hasAnyRole("USER","ADMIN")
+                        .anyRequest().authenticated())
+                .httpBasic(org.springframework.security.config.Customizer.withDefaults())
+                .sessionManagement(session->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
 

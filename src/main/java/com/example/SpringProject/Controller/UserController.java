@@ -6,30 +6,39 @@ import com.example.SpringProject.Repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController // Marks this class as a REST controller, handling incoming HTTP requests
 @RequestMapping("/api/users") // Base path for all endpoints in this controller
 public class UserController {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        // Encrypt password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-    @PostMapping
-    public ResponseEntity<List<User>> createUsers(@Valid @RequestBody List<User> users) {
-        // @Valid triggers validation annotations on each User object in the list
-        // @RequestBody maps the JSON array in the request body to a List<User>
-        List<User> savedUsers = userRepository.saveAll(users); // Saves all users to the database in a batch
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUsers); // Returns 201 Created with the list of saved users
+        // Default role setup (ensure your User entity supports this)
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(Set.of("ROLE_USER"));
+        }
+
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
 
